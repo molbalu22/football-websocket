@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/main.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec tsx src/main.ts",
     "lint": "eslint 'src/**/*.ts'"
   },
   "keywords": [],
@@ -15,15 +15,21 @@
   "type": "module",
   "dependencies": {
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "ws": "^8.18.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.2",
     "@types/node": "^22.15.18",
+    "@types/ws": "^8.18.1",
     "eslint": "^9.27.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.9"
   }
 }
