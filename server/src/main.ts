@@ -12,12 +12,73 @@ function generateToken(length = 56) {
 
 function sendServerMessage(ws: WebSocket, message: ServerMessage) {
   ws.send(JSON.stringify(message));
-  console.log("sent: %s", message);
+  console.log("sent:", message);
+}
+
+function sendServerMessageToAll(message: ServerMessage) {
+  players.forEach((player) => {
+    player.socket.send(JSON.stringify(message));
+  });
+
+  console.log("sent to all:", message);
 }
 
 let players: Array<Player> = [];
 
-function handlePlayerMessage(ws: WebSocket, message: PlayerMessage) {
+function handlePlayerMessage(player: Player, message: PlayerMessage) {
+  if (message.type === "player.keyboardInput") {
+    const { key, ctrlKey, metaKey, altKey, shiftKey } = message;
+
+    if (!ctrlKey && !metaKey && !altKey && !shiftKey) {
+      switch (key) {
+        case "r":
+          sendServerMessageToAll({
+            type: "server.gameUpdate",
+            update: {
+              type: "squareColorUpdate",
+              playerIndex: player.playerIndex,
+              color: "red",
+            },
+          });
+          break;
+
+        case "g":
+          sendServerMessageToAll({
+            type: "server.gameUpdate",
+            update: {
+              type: "squareColorUpdate",
+              playerIndex: player.playerIndex,
+              color: "green",
+            },
+          });
+          break;
+
+        case "b":
+          sendServerMessageToAll({
+            type: "server.gameUpdate",
+            update: {
+              type: "squareColorUpdate",
+              playerIndex: player.playerIndex,
+              color: "blue",
+            },
+          });
+          break;
+      }
+    }
+  }
+}
+
+function registerPlayerMessageCallback(player: Player) {
+  player.socket.removeAllListeners("message");
+
+  player.socket.on("message", (data) => {
+    const message = JSON.parse(data.toString());
+    console.log(`received from player ${player.playerIndex}:`, message);
+    handlePlayerMessage(player, message);
+  });
+}
+
+function handleNewPlayerMessage(ws: WebSocket, message: PlayerMessage) {
   if (message.type === "player.joinGame") {
     if (message.playerId) {
       const playerIndex = players.findIndex(
@@ -29,6 +90,7 @@ function handlePlayerMessage(ws: WebSocket, message: PlayerMessage) {
 
         player.socket = ws;
         player.active = true;
+        registerPlayerMessageCallback(player);
 
         sendServerMessage(ws, {
           type: "server.acceptPlayer",
@@ -46,40 +108,45 @@ function handlePlayerMessage(ws: WebSocket, message: PlayerMessage) {
     }
 
     const playerId = generateToken();
+    const playerIndex = players.length;
 
-    players.push({
+    const player: Player = {
       socket: ws,
       active: true,
-      playerId: playerId,
-    });
+      playerId,
+      playerIndex,
+    };
+
+    players.push(player);
+    registerPlayerMessageCallback(player);
 
     sendServerMessage(ws, {
       type: "server.acceptPlayer",
       playerId,
-      playerIndex: players.length - 1,
+      playerIndex,
     });
   }
 }
 
 const wss = new WebSocketServer({ host: "0.0.0.0", port: 8080 });
 
-wss.on("connection", function connection(ws) {
+wss.on("connection", (ws) => {
   ws.on("error", console.error);
 
-  ws.on("message", function message(data) {
+  ws.on("message", (data) => {
     const message = JSON.parse(data.toString());
-    console.log("received: %s", message);
-    handlePlayerMessage(ws, message);
+    console.log("received:", message);
+    handleNewPlayerMessage(ws, message);
   });
 
-  ws.onclose = () => {
+  ws.on("close", () => {
     for (const player of players) {
       if (player.socket === ws) {
         player.active = false;
-        console.log("player disconnected: %s", player.playerId);
+        console.log("player disconnected:", player.playerId);
       }
     }
-  };
+  });
 
   sendServerMessage(ws, { type: "server.ready" });
 });

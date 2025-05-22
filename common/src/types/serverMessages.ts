@@ -12,7 +12,21 @@ type ServerTooManyPlayersMessage = {
   type: "server.tooManyPlayers";
 };
 
+type SquareColorUpdate = {
+  type: "squareColorUpdate";
+  playerIndex: number;
+  color: "red" | "green" | "blue";
+};
+
+type GameUpdate = SquareColorUpdate;
+
+type ServerGameUpdate = {
+  type: "server.gameUpdate";
+  update: GameUpdate;
+};
+
 export type ServerMessage =
   | ServerReadyMessage
   | ServerAcceptPlayerMessage
-  | ServerTooManyPlayersMessage;
+  | ServerTooManyPlayersMessage
+  | ServerGameUpdate;

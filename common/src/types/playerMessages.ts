@@ -3,4 +3,13 @@ type PlayerJoinGameMessage = {
   playerId: string | null;
 };
 
-export type PlayerMessage = PlayerJoinGameMessage;
+type PlayerKeyboardInputMessage = {
+  type: "player.keyboardInput";
+  key: string;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  altKey: boolean;
+  shiftKey: boolean;
+};
+
+export type PlayerMessage = PlayerJoinGameMessage | PlayerKeyboardInputMessage;
