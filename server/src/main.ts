@@ -1,55 +1,47 @@
-import config from "./config.js";
-
 import { randomBytes } from "node:crypto";
 import { WebSocket, WebSocketServer } from "ws";
+
+import config from "./config.js";
+import { Player, ServerMessage, PlayerMessage } from "./common/types.js";
+
+console.log(config);
 
 function generateToken(length = 56) {
   return Buffer.from(randomBytes(length)).toString("hex");
 }
 
-console.log(config);
-
-type Player = { socket: WebSocket; active: boolean; playerId: string };
+function sendServerMessage(ws: WebSocket, message: ServerMessage) {
+  ws.send(JSON.stringify(message));
+  console.log("sent: %s", message);
+}
 
 let players: Array<Player> = [];
 
-type PlayerReadyMessage = {
-  type: "playerReady";
-  playerId: string | null;
-};
-
-type GameMessage = PlayerReadyMessage;
-
-function handleMessage(ws: WebSocket, message: GameMessage) {
-  if (message.type === "playerReady") {
-    const playerIndex = players.findIndex(
-      (player) => player.playerId === message.playerId
-    );
-
-    if (playerIndex !== -1) {
-      const player = players[playerIndex];
-
-      player.socket = ws;
-      player.active = true;
-
-      ws.send(
-        JSON.stringify({
-          type: "playerAccepted",
-          playerId: message.playerId,
-          playerIndex,
-        })
+function handlePlayerMessage(ws: WebSocket, message: PlayerMessage) {
+  if (message.type === "player.joinGame") {
+    if (message.playerId) {
+      const playerIndex = players.findIndex(
+        (player) => player.playerId === message.playerId
       );
 
-      return;
+      if (playerIndex !== -1) {
+        const player = players[playerIndex];
+
+        player.socket = ws;
+        player.active = true;
+
+        sendServerMessage(ws, {
+          type: "server.acceptPlayer",
+          playerId: message.playerId,
+          playerIndex,
+        });
+
+        return;
+      }
     }
 
     if (players.length === 2) {
-      ws.send(
-        JSON.stringify({
-          type: "tooManyPlayers",
-        })
-      );
-
+      sendServerMessage(ws, { type: "server.tooManyPlayers" });
       return;
     }
 
@@ -61,13 +53,11 @@ function handleMessage(ws: WebSocket, message: GameMessage) {
       playerId: playerId,
     });
 
-    ws.send(
-      JSON.stringify({
-        type: "playerAccepted",
-        playerId,
-        playerIndex: players.length - 1,
-      })
-    );
+    sendServerMessage(ws, {
+      type: "server.acceptPlayer",
+      playerId,
+      playerIndex: players.length - 1,
+    });
   }
 }
 
@@ -77,17 +67,19 @@ wss.on("connection", function connection(ws) {
   ws.on("error", console.error);
 
   ws.on("message", function message(data) {
-    console.log("received: %s", data);
-    handleMessage(ws, JSON.parse(data.toString()));
+    const message = JSON.parse(data.toString());
+    console.log("received: %s", message);
+    handlePlayerMessage(ws, message);
   });
 
   ws.onclose = () => {
     for (const player of players) {
       if (player.socket === ws) {
         player.active = false;
+        console.log("player disconnected: %s", player.playerId);
       }
     }
   };
 
-  ws.send(JSON.stringify({ type: "serverHello" }));
+  sendServerMessage(ws, { type: "server.ready" });
 });

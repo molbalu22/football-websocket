@@ -1,3 +1,4 @@
+import type { PlayerMessage, ServerMessage } from "./common/types";
 import "./style.css";
 
 const DEBUG = true;
@@ -5,34 +6,31 @@ const WEBSOCKET_URL = "http://localhost:8080";
 
 const gameStatusElement = document.getElementById("gameStatus");
 
-type PlayerAcceptedMessage = {
-  type: "playerAccepted";
-  playerId: string;
-  playerIndex: number;
-};
-
-type TooManyPlayersMessage = {
-  type: "tooManyPlayers";
-};
-
-type GameMessage = PlayerAcceptedMessage | TooManyPlayersMessage;
-
 const gameState = {
   playerIndex: 0,
 };
 
-function handleMessage(ws: WebSocket, message: GameMessage) {
+function sendPlayerMessage(ws: WebSocket, message: PlayerMessage) {
+  ws.send(JSON.stringify(message));
+
+  if (DEBUG) {
+    console.log("[DEBUG] Websocket message sent:");
+    console.log(message);
+  }
+}
+
+function handleServerMessage(ws: WebSocket, message: ServerMessage) {
   // Will be useful later
   ws;
 
-  if (message.type === "playerAccepted") {
+  if (message.type === "server.acceptPlayer") {
     sessionStorage.setItem("playerId", message.playerId);
     gameState.playerIndex = message.playerIndex;
 
     if (gameStatusElement) {
       gameStatusElement.textContent = `You are: Player ${gameState.playerIndex}`;
     }
-  } else if (message.type === "tooManyPlayers") {
+  } else if (message.type === "server.tooManyPlayers") {
     if (gameStatusElement) {
       gameStatusElement.textContent =
         "Sorry, you can't join now. There are too many players in the game.";
@@ -51,18 +49,16 @@ async function connectToWebsocket() {
       console.log(message);
     }
 
-    handleMessage(ws, message);
+    handleServerMessage(ws, message);
   };
 
   ws.onopen = () => {
     console.log("Websocket connection established");
 
-    ws.send(
-      JSON.stringify({
-        type: "playerReady",
-        playerId: sessionStorage.getItem("playerId"),
-      })
-    );
+    sendPlayerMessage(ws, {
+      type: "player.joinGame",
+      playerId: sessionStorage.getItem("playerId"),
+    });
   };
 }
 
