@@ -12,6 +12,7 @@
       <p id="gameStatus" class="text-neutral-900 dark:text-neutral-100">
         Connecting to server...
       </p>
+      <div data-type="gap" class="h-2"></div>
       <div class="flex gap-2">
         <div
           id="game-square-index-0"
@@ -26,6 +27,11 @@
           <div class="text-7xl text-white">1</div>
         </div>
       </div>
+      <div data-type="gap" class="h-2"></div>
+      <canvas
+        id="gameCanvas"
+        class="w-[calc(var(--spacing)*144)] h-[calc(var(--spacing)*144)] bg-neutral-300 dark:bg-neutral-700 rounded cursor-none"
+      ></canvas>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
