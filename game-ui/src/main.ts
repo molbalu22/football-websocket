@@ -1,20 +1,24 @@
-import { GameCanvasError, getGameCanvas } from "./canvas/ctx";
-import { registerCanvasMouseMoveCallback } from "./events/mouse";
+import { GameStageError, getGameStage } from "./canvas/ctx";
+import { drawMousePointer } from "./canvas/mousePointer";
+import { onMouseMove, registerMouseMoveCallback } from "./events/mouse";
 import type { GameState } from "./game/GameState";
-import { connectToWebsocket } from "./game/websocket";
+import { connectToWebsocket, sendPlayerMessage } from "./game/websocket";
 import "./style.css";
 
 function main() {
-  const gameCanvas = getGameCanvas();
+  const gameStage = getGameStage();
 
-  if (gameCanvas instanceof GameCanvasError) {
-    console.error(gameCanvas.errorMsg);
+  if (gameStage instanceof GameStageError) {
+    console.error(gameStage.errorMsg);
     return;
   }
 
   const gameState: GameState = {
+    socket: null,
+    isPlayerAccepted: false,
     playerIndex: 0,
-    ...gameCanvas,
+    darkTheme: document.body.dataset.theme === "dark",
+    ...gameStage,
   };
 
   try {
@@ -24,7 +28,19 @@ function main() {
     return;
   }
 
-  registerCanvasMouseMoveCallback(gameCanvas);
+  onMouseMove(drawMousePointer);
+
+  onMouseMove((gameState, mouseX, mouseY) => {
+    if (gameState.socket && gameState.isPlayerAccepted) {
+      sendPlayerMessage(gameState.socket, {
+        type: "player.mouseMove",
+        mouseX,
+        mouseY,
+      });
+    }
+  });
+
+  registerMouseMoveCallback(gameState);
 }
 
 main();

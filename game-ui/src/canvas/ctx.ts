@@ -1,4 +1,4 @@
-import type { GameCanvas } from "./GameCanvas";
+import type { GameCanvas, GameStage } from "./GameCanvas";
 
 // Consider:
 // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
@@ -7,16 +7,16 @@ import type { GameCanvas } from "./GameCanvas";
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality
 // https://stackoverflow.com/questions/7238586/do-i-need-to-be-concerned-with-race-conditions-with-asynchronous-javascript/7238663#7238663
 
-type GameCanvasErrorType =
+type GameStageErrorType =
   | "NULL_CANVAS"
   | "CANVAS_TYPE_ERROR"
   | "GET_2D_CTX_ERROR";
 
-export class GameCanvasError {
-  errorType: GameCanvasErrorType;
+export class GameStageError {
+  errorType: GameStageErrorType;
   errorMsg: string;
 
-  constructor(errorType: GameCanvasErrorType) {
+  constructor(errorType: GameStageErrorType) {
     this.errorType = errorType;
 
     switch (errorType) {
@@ -36,42 +36,58 @@ export class GameCanvasError {
   }
 }
 
-export function getGameCanvas(): GameCanvas | GameCanvasError {
-  const gameCanvas = document.getElementById("gameCanvas");
+export function getGameStage(): GameStage | GameStageError {
+  const stage = document.getElementById("stage");
+  const cursorCanvas = document.getElementById("cursorCanvas");
+  const opponentCursorCanvas = document.getElementById("opponentCursorCanvas");
 
-  if (!gameCanvas) {
-    return new GameCanvasError("NULL_CANVAS");
+  if (!(stage && cursorCanvas && opponentCursorCanvas)) {
+    return new GameStageError("NULL_CANVAS");
   }
 
-  if (!(gameCanvas instanceof HTMLCanvasElement)) {
-    return new GameCanvasError("CANVAS_TYPE_ERROR");
+  if (
+    !(
+      cursorCanvas instanceof HTMLCanvasElement &&
+      opponentCursorCanvas instanceof HTMLCanvasElement
+    )
+  ) {
+    return new GameStageError("CANVAS_TYPE_ERROR");
   }
 
-  // Get the bounding rectangle of the game canvas
-  const rect = gameCanvas.getBoundingClientRect();
+  // Get the bounding rectangle of the stage
+  const rect = stage.getBoundingClientRect();
 
   // Set the width and height attributes to the CSS width and height
-  gameCanvas.width = rect.width;
-  gameCanvas.height = rect.height;
+  cursorCanvas.width = rect.width;
+  cursorCanvas.height = rect.height;
+  opponentCursorCanvas.width = rect.width;
+  opponentCursorCanvas.height = rect.height;
 
-  if (gameCanvas.getContext) {
-    const ctx = gameCanvas.getContext("2d");
+  if (cursorCanvas.getContext) {
+    const cursorCtx = cursorCanvas.getContext("2d");
+    const opponentCursorCtx = opponentCursorCanvas.getContext("2d");
 
-    if (!ctx) {
-      return new GameCanvasError("GET_2D_CTX_ERROR");
+    if (!(cursorCtx && opponentCursorCtx)) {
+      return new GameStageError("GET_2D_CTX_ERROR");
     }
 
     return {
-      canvasElement: gameCanvas,
-      canvasCtx: ctx,
+      cursorCanvas: {
+        canvasElement: cursorCanvas,
+        ctx: cursorCtx,
+      },
+      opponentCursorCanvas: {
+        canvasElement: opponentCursorCanvas,
+        ctx: opponentCursorCtx,
+      },
     };
   }
 
-  return new GameCanvasError("GET_2D_CTX_ERROR");
+  return new GameStageError("GET_2D_CTX_ERROR");
 }
 
 export function clearCanvas(gameCanvas: GameCanvas) {
-  const { canvasElement, canvasCtx } = gameCanvas;
+  const { canvasElement, ctx } = gameCanvas;
 
-  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+  ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 }

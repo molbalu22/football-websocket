@@ -1,3 +1,4 @@
+import { drawOpponentMousePointer } from "../canvas/mousePointer";
 import type { PlayerMessage, ServerMessage } from "../common/types";
 import { CONFIG } from "../config";
 import type { GameState } from "./GameState";
@@ -9,7 +10,7 @@ const gameSquares = [
   document.getElementById("game-square-index-1"),
 ];
 
-function sendPlayerMessage(ws: WebSocket, message: PlayerMessage) {
+export function sendPlayerMessage(ws: WebSocket, message: PlayerMessage) {
   ws.send(JSON.stringify(message));
 
   if (CONFIG.DEBUG) {
@@ -29,6 +30,7 @@ function handleServerMessage(
   // server.acceptPlayer
   if (message.type === "server.acceptPlayer") {
     sessionStorage.setItem("playerId", message.playerId);
+    gameState.isPlayerAccepted = true;
     gameState.playerIndex = message.playerIndex;
 
     if (gameStatusElement) {
@@ -48,6 +50,7 @@ function handleServerMessage(
   else if (message.type === "server.gameUpdate") {
     const { update } = message;
 
+    // squareColorUpdate
     if (update.type === "squareColorUpdate") {
       const newSquare = document.createElement("div");
       newSquare.id = `game-square-index-${update.playerIndex}`;
@@ -68,6 +71,14 @@ function handleServerMessage(
       gameSquares[update.playerIndex]?.replaceWith(newSquare);
       gameSquares[update.playerIndex] = newSquare;
     }
+
+    // playerPositionUpdate
+    else if (
+      update.type === "playerPositionUpdate" &&
+      update.playerIndex !== gameState.playerIndex
+    ) {
+      drawOpponentMousePointer(gameState, update.mouseX, update.mouseY);
+    }
   }
 }
 
@@ -87,6 +98,7 @@ export async function connectToWebsocket(gameState: GameState) {
 
   ws.onopen = () => {
     console.log("Websocket connection established");
+    gameState.socket = ws;
 
     sendPlayerMessage(ws, {
       type: "player.joinGame",

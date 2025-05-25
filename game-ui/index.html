@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + TS</title>
   </head>
-  <body class="bg-neutral-100 dark:bg-neutral-900 p-2">
+  <body
+    data-theme="dark"
+    class="bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 p-2"
+  >
     <div id="app">
-      <h1 class="text-2xl text-neutral-900 dark:text-neutral-100">Game UI</h1>
-      <p id="gameStatus" class="text-neutral-900 dark:text-neutral-100">
-        Connecting to server...
-      </p>
+      <h1 class="text-2xl">Game UI</h1>
+      <p id="gameStatus">Connecting to server...</p>
       <div data-type="gap" class="h-2"></div>
       <div class="flex gap-2">
         <div
@@ -28,10 +29,13 @@
         </div>
       </div>
       <div data-type="gap" class="h-2"></div>
-      <canvas
-        id="gameCanvas"
-        class="w-[calc(var(--spacing)*144)] h-[calc(var(--spacing)*144)] bg-neutral-300 dark:bg-neutral-700 rounded cursor-none"
-      ></canvas>
+      <div
+        id="stage"
+        class="w-[calc(var(--spacing)*144)] h-[calc(var(--spacing)*144)] bg-neutral-300 dark:bg-neutral-700 rounded cursor-none relative"
+      >
+        <canvas id="cursorCanvas" class="absolute z-30"></canvas>
+        <canvas id="opponentCursorCanvas" class="absolute z-20"></canvas>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -1,0 +1,14 @@
+{
+  "mappings": "AAgBC,SAAQ,CAAEA",
+  "sources": ["src/main.js"],
+  "sourcesContent": [],
+  "names": [],
+  "version": 3,
+  "file": "installHook.js.map",
+  "comments": [
+    "Remove warnings caused by React DevTools. See:",
+    "https://github.com/facebook/react/issues/32339",
+    "https://web.dev/articles/source-maps",
+    "https://developer.chrome.com/blog/sourcemaps#the_anatomy_of_a_source_map"
+  ]
+}

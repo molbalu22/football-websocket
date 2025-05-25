@@ -12,4 +12,13 @@ type PlayerKeyboardInputMessage = {
   shiftKey: boolean;
 };
 
-export type PlayerMessage = PlayerJoinGameMessage | PlayerKeyboardInputMessage;
+type PlayerMouseMoveMessage = {
+  type: "player.mouseMove";
+  mouseX: number;
+  mouseY: number;
+};
+
+export type PlayerMessage =
+  | PlayerJoinGameMessage
+  | PlayerKeyboardInputMessage
+  | PlayerMouseMoveMessage;

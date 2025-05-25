@@ -26,6 +26,7 @@ function sendServerMessageToAll(message: ServerMessage) {
 let players: Array<Player> = [];
 
 function handlePlayerMessage(player: Player, message: PlayerMessage) {
+  // player.keyboardInput
   if (message.type === "player.keyboardInput") {
     const { key, ctrlKey, metaKey, altKey, shiftKey } = message;
 
@@ -65,6 +66,19 @@ function handlePlayerMessage(player: Player, message: PlayerMessage) {
           break;
       }
     }
+  }
+
+  // player.mouseMove
+  else if (message.type === "player.mouseMove") {
+    sendServerMessageToAll({
+      type: "server.gameUpdate",
+      update: {
+        type: "playerPositionUpdate",
+        playerIndex: player.playerIndex,
+        mouseX: message.mouseX,
+        mouseY: message.mouseY,
+      },
+    });
   }
 }
 

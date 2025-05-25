@@ -18,9 +18,16 @@ type SquareColorUpdate = {
   color: "red" | "green" | "blue";
 };
 
-type GameUpdate = SquareColorUpdate;
+type PlayerPositionUpdate = {
+  type: "playerPositionUpdate";
+  playerIndex: number;
+  mouseX: number;
+  mouseY: number;
+};
 
-type ServerGameUpdate = {
+type GameUpdate = SquareColorUpdate | PlayerPositionUpdate;
+
+type ServerGameUpdateMessage = {
   type: "server.gameUpdate";
   update: GameUpdate;
 };
@@ -29,4 +36,4 @@ export type ServerMessage =
   | ServerReadyMessage
   | ServerAcceptPlayerMessage
   | ServerTooManyPlayersMessage
-  | ServerGameUpdate;
+  | ServerGameUpdateMessage;
