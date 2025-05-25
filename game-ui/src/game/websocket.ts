@@ -1,4 +1,5 @@
 import { drawOpponentMousePointer } from "../canvas/mousePointer";
+import { placePlayerOnBoard } from "../canvas/playerFigure";
 import type { PlayerMessage, ServerMessage } from "../common/types";
 import { CONFIG } from "../config";
 import type { GameState } from "./GameState";
@@ -36,6 +37,8 @@ function handleServerMessage(
     if (gameStatusElement) {
       gameStatusElement.textContent = `You are: Player ${gameState.playerIndex}`;
     }
+
+    placePlayerOnBoard(gameState);
   }
 
   // server.tooManyPlayers

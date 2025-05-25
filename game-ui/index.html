@@ -29,12 +29,15 @@
         </div>
       </div>
       <div data-type="gap" class="h-2"></div>
+
+      <!-- Keep the width and height the same as in the COMMON_CONFIG from ./src/common/config.ts -->
       <div
         id="stage"
-        class="w-[calc(var(--spacing)*144)] h-[calc(var(--spacing)*144)] bg-neutral-300 dark:bg-neutral-700 rounded cursor-none relative"
+        class="w-[576px] h-[576px] bg-neutral-300 dark:bg-neutral-700 rounded cursor-none relative"
       >
         <canvas id="cursorCanvas" class="absolute z-30"></canvas>
         <canvas id="opponentCursorCanvas" class="absolute z-20"></canvas>
+        <canvas id="figureCanvas" class="absolute z-10"></canvas>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>

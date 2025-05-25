@@ -1,3 +1,4 @@
+import { COMMON_CONFIG } from "../common/config";
 import type { GameCanvas, GameStage } from "./GameCanvas";
 
 // Consider:
@@ -40,34 +41,38 @@ export function getGameStage(): GameStage | GameStageError {
   const stage = document.getElementById("stage");
   const cursorCanvas = document.getElementById("cursorCanvas");
   const opponentCursorCanvas = document.getElementById("opponentCursorCanvas");
+  const figureCanvas = document.getElementById("figureCanvas");
 
-  if (!(stage && cursorCanvas && opponentCursorCanvas)) {
+  if (!(stage && cursorCanvas && opponentCursorCanvas && figureCanvas)) {
     return new GameStageError("NULL_CANVAS");
   }
 
   if (
     !(
       cursorCanvas instanceof HTMLCanvasElement &&
-      opponentCursorCanvas instanceof HTMLCanvasElement
+      opponentCursorCanvas instanceof HTMLCanvasElement &&
+      figureCanvas instanceof HTMLCanvasElement
     )
   ) {
     return new GameStageError("CANVAS_TYPE_ERROR");
   }
 
-  // Get the bounding rectangle of the stage
-  const rect = stage.getBoundingClientRect();
+  stage.style.width = `${COMMON_CONFIG.stageSize.width}px`;
+  stage.style.height = `${COMMON_CONFIG.stageSize.height}px`;
 
-  // Set the width and height attributes to the CSS width and height
-  cursorCanvas.width = rect.width;
-  cursorCanvas.height = rect.height;
-  opponentCursorCanvas.width = rect.width;
-  opponentCursorCanvas.height = rect.height;
+  cursorCanvas.width = COMMON_CONFIG.stageSize.width;
+  cursorCanvas.height = COMMON_CONFIG.stageSize.height;
+  opponentCursorCanvas.width = COMMON_CONFIG.stageSize.width;
+  opponentCursorCanvas.height = COMMON_CONFIG.stageSize.height;
+  figureCanvas.width = COMMON_CONFIG.stageSize.width;
+  figureCanvas.height = COMMON_CONFIG.stageSize.height;
 
   if (cursorCanvas.getContext) {
     const cursorCtx = cursorCanvas.getContext("2d");
     const opponentCursorCtx = opponentCursorCanvas.getContext("2d");
+    const figureCtx = figureCanvas.getContext("2d");
 
-    if (!(cursorCtx && opponentCursorCtx)) {
+    if (!(cursorCtx && opponentCursorCtx && figureCtx)) {
       return new GameStageError("GET_2D_CTX_ERROR");
     }
 
@@ -79,6 +84,10 @@ export function getGameStage(): GameStage | GameStageError {
       opponentCursorCanvas: {
         canvasElement: opponentCursorCanvas,
         ctx: opponentCursorCtx,
+      },
+      figureCanvas: {
+        canvasElement: figureCanvas,
+        ctx: figureCtx,
       },
     };
   }
