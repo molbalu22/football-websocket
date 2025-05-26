@@ -30,14 +30,18 @@ export function drawPlayerFigure(
 }
 
 export function placePlayerOnBoard(gameState: GameState) {
-  const { playerRadius, stageSize } = COMMON_CONFIG;
+  const { playerRadius, stageSize, playerInitialXOffset } = COMMON_CONFIG;
 
   if (gameState.playerIndex === 0) {
-    drawPlayerFigure(gameState, 50, stageSize.height / 2 - playerRadius / 2);
+    drawPlayerFigure(
+      gameState,
+      playerInitialXOffset,
+      stageSize.height / 2 - playerRadius / 2
+    );
   } else {
     drawPlayerFigure(
       gameState,
-      stageSize.width - 50,
+      stageSize.width - playerInitialXOffset,
       stageSize.height / 2 - playerRadius / 2
     );
   }
