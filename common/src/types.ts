@@ -1,14 +1,10 @@
-import { WebSocket } from "ws";
+import type { Player, CommonGameState } from "./types/game.js";
+import { InitialCommonGameState } from "./types/game.js";
+import type { PlayerMessage } from "./types/playerMessages.js";
+import type { ServerMessage } from "./types/serverMessages.js";
 
-import { PlayerMessage } from "./types/playerMessages.js";
-import { ServerMessage } from "./types/serverMessages.js";
-
-export type Player = {
-  socket: WebSocket;
-  active: boolean;
-  playerId: string;
-  playerIndex: number;
-};
+export type { Player, CommonGameState };
+export { InitialCommonGameState };
 
 type GameMessage = ServerMessage | PlayerMessage;
-export { ServerMessage, PlayerMessage, GameMessage };
+export type { ServerMessage, PlayerMessage, GameMessage };

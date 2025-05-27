@@ -1,5 +1,5 @@
-import { drawOpponentMousePointer } from "../canvas/mousePointer";
-import { placePlayerOnBoard } from "../canvas/playerFigure";
+import { drawPlayersOnBoard } from "../canvas/playerFigure";
+import { onEachFrame, startRenderLoop } from "../canvas/renderLoop";
 import type { PlayerMessage, ServerMessage } from "../common/types";
 import { CONFIG } from "../config";
 import type { GameState } from "./GameState";
@@ -38,7 +38,8 @@ function handleServerMessage(
       gameStatusElement.textContent = `You are: Player ${gameState.playerIndex}`;
     }
 
-    placePlayerOnBoard(gameState);
+    onEachFrame(drawPlayersOnBoard);
+    startRenderLoop(gameState);
   }
 
   // server.tooManyPlayers
@@ -76,11 +77,8 @@ function handleServerMessage(
     }
 
     // playerPositionUpdate
-    else if (
-      update.type === "playerPositionUpdate" &&
-      update.playerIndex !== gameState.playerIndex
-    ) {
-      drawOpponentMousePointer(gameState, update.mouseX, update.mouseY);
+    else if (update.type === "playerPositionUpdate") {
+      gameState.playerPosition = update.position;
     }
   }
 }

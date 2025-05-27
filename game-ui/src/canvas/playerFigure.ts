@@ -5,44 +5,25 @@ import { clearCanvas } from "./ctx";
 
 export function drawPlayerFigure(
   gameState: GameState,
+  playerIndex: 0 | 1,
   offsetX: number,
   offsetY: number
 ) {
+  const { playerRadius } = COMMON_CONFIG;
   const { figureCanvas } = gameState;
   const { ctx } = figureCanvas;
 
-  clearCanvas(figureCanvas);
   ctx.beginPath();
-
-  if (gameState.isPlayerAccepted) {
-    ctx.fillStyle = FOREGROUND_COLORS[gameState.playerIndex as 0 | 1].solid;
-  } else {
-    ctx.fillStyle =
-      FOREGROUND_COLORS.neutral[
-        gameState.darkTheme ? "darkTheme" : "lightTheme"
-      ].solid;
-  }
-
-  const { playerRadius } = COMMON_CONFIG;
-
+  ctx.fillStyle = FOREGROUND_COLORS[playerIndex].solid;
   ctx.arc(offsetX, offsetY, playerRadius, 0, Math.PI * 2, true);
   ctx.fill();
 }
 
-export function placePlayerOnBoard(gameState: GameState) {
-  const { playerRadius, stageSize, playerInitialXOffset } = COMMON_CONFIG;
+export function drawPlayersOnBoard(gameState: GameState) {
+  const { figureCanvas } = gameState;
+  const { playerPosition } = gameState;
 
-  if (gameState.playerIndex === 0) {
-    drawPlayerFigure(
-      gameState,
-      playerInitialXOffset,
-      stageSize.height / 2 - playerRadius / 2
-    );
-  } else {
-    drawPlayerFigure(
-      gameState,
-      stageSize.width - playerInitialXOffset,
-      stageSize.height / 2 - playerRadius / 2
-    );
-  }
+  clearCanvas(figureCanvas);
+  drawPlayerFigure(gameState, 0, playerPosition[0].x, playerPosition[0].y);
+  drawPlayerFigure(gameState, 1, playerPosition[1].x, playerPosition[1].y);
 }

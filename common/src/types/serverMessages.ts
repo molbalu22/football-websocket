@@ -20,9 +20,16 @@ type SquareColorUpdate = {
 
 type PlayerPositionUpdate = {
   type: "playerPositionUpdate";
-  playerIndex: number;
-  mouseX: number;
-  mouseY: number;
+  position: {
+    0: {
+      x: number;
+      y: number;
+    };
+    1: {
+      x: number;
+      y: number;
+    };
+  };
 };
 
 type GameUpdate = SquareColorUpdate | PlayerPositionUpdate;

@@ -1,5 +1,6 @@
 import { GameStageError, getGameStage } from "./canvas/ctx";
 import { drawMousePointer } from "./canvas/mousePointer";
+import { InitialCommonGameState } from "./common/types";
 import { onMouseMove, registerMouseMoveCallback } from "./events/mouse";
 import type { GameState } from "./game/GameState";
 import { connectToWebsocket, sendPlayerMessage } from "./game/websocket";
@@ -19,6 +20,7 @@ function main() {
     playerIndex: 0,
     darkTheme: document.body.dataset.theme === "dark",
     ...gameStage,
+    ...InitialCommonGameState,
   };
 
   try {

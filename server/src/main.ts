@@ -2,10 +2,16 @@ import { randomBytes } from "node:crypto";
 import { WebSocket, WebSocketServer } from "ws";
 
 import config from "./config.js";
-import { Player, ServerMessage, PlayerMessage } from "./common/types.js";
+import {
+  Player,
+  ServerMessage,
+  PlayerMessage,
+  InitialCommonGameState,
+} from "./common/types.js";
 import { ServerGameState } from "./game/ServerGameState.js";
 import { COMMON_CONFIG } from "./common/config.js";
 import { UpdateLoop } from "./game/updateLoop.js";
+import { vector2Add, vector2Normalize, vector2Scale } from "./game/math.js";
 
 console.log(config);
 
@@ -29,26 +35,42 @@ function sendServerMessageToAll(
   console.log("sent to all:", message);
 }
 
-const { playerRadius, stageSize, playerInitialXOffset } = COMMON_CONFIG;
-
 const gameState: ServerGameState = {
   players: [],
-  playerPosition: {
-    0: {
-      x: playerInitialXOffset,
-      y: stageSize.height / 2 - playerRadius / 2,
-    },
-    1: {
-      x: stageSize.width - playerInitialXOffset,
-      y: stageSize.height / 2 - playerRadius / 2,
-    },
-  },
-  playerMousePosition: {
-    0: null,
-    1: null,
-  },
-  isGameRunning: false,
+  ...InitialCommonGameState,
 };
+
+function movePlayers(gameState: ServerGameState) {
+  const { playerSpeed } = COMMON_CONFIG;
+
+  for (const playerIndex of [0, 1] as Array<0 | 1>) {
+    if (gameState.playerMousePosition[playerIndex]) {
+      const posX = gameState.playerPosition[playerIndex].x;
+      const posY = gameState.playerPosition[playerIndex].y;
+
+      const mouseX = gameState.playerMousePosition[playerIndex].x;
+      const mouseY = gameState.playerMousePosition[playerIndex].y;
+
+      const playerDirection = vector2Normalize([mouseX - posX, mouseY - posY]);
+
+      const newPos = vector2Add(
+        [posX, posY],
+        vector2Scale(playerDirection, playerSpeed)
+      );
+
+      gameState.playerPosition[playerIndex].x = newPos[0];
+      gameState.playerPosition[playerIndex].y = newPos[1];
+    }
+  }
+
+  sendServerMessageToAll(gameState, {
+    type: "server.gameUpdate",
+    update: {
+      type: "playerPositionUpdate",
+      position: gameState.playerPosition,
+    },
+  });
+}
 
 function handlePlayerMessage(
   gameState: ServerGameState,
@@ -99,15 +121,17 @@ function handlePlayerMessage(
 
   // player.mouseMove
   else if (message.type === "player.mouseMove") {
-    sendServerMessageToAll(gameState, {
-      type: "server.gameUpdate",
-      update: {
-        type: "playerPositionUpdate",
-        playerIndex: player.playerIndex,
-        mouseX: message.mouseX,
-        mouseY: message.mouseY,
-      },
-    });
+    if (!gameState.isGameRunning) {
+      gameState.isGameRunning = true;
+      const updateLoop = new UpdateLoop(gameState);
+      updateLoop.onUpdate(movePlayers);
+      updateLoop.start();
+    }
+
+    gameState.playerMousePosition[player.playerIndex as 0 | 1] = {
+      x: message.mouseX,
+      y: message.mouseY,
+    };
   }
 }
 
@@ -200,6 +224,3 @@ wss.on("connection", (ws) => {
 
   sendServerMessage(ws, { type: "server.ready" });
 });
-
-const updateLoop = new UpdateLoop(gameState);
-updateLoop.start();

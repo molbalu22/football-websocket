@@ -5,6 +5,8 @@ type CommonConfig = {
   };
   playerInitialXOffset: number;
   playerRadius: number;
+  playerSpeed: number;
+  fps: number;
 };
 
 export const COMMON_CONFIG: CommonConfig = {
@@ -14,4 +16,6 @@ export const COMMON_CONFIG: CommonConfig = {
   },
   playerInitialXOffset: 50,
   playerRadius: 35,
+  playerSpeed: 1.1,
+  fps: 60,
 };
