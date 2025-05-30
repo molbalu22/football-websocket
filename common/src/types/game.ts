@@ -98,5 +98,5 @@ export const InitialCommonGameState: CommonGameState = {
   },
   clampedBallKickPosition: null,
   lastBallKickTime: 0,
-  ballDirection: [1, 0],
+  ballDirection: [1, 1],
 };

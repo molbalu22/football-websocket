@@ -13,6 +13,7 @@ import { COMMON_CONFIG } from "./common/config.js";
 import { UpdateLoop } from "./game/updateLoop.js";
 import {
   clampMousePostion,
+  reflectBallInsideStage,
   vector2Add,
   vector2Length,
   vector2Normalize,
@@ -104,7 +105,9 @@ function moveBall(gameState: ServerGameState) {
 
   const { clampedBallKickPosition } = gameState;
   const { x, y } = clampedBallKickPosition;
-  const newPos = vector2Add([x, y], vector2Scale(gameState.ballDirection, s));
+  const newPos = reflectBallInsideStage(
+    vector2Add([x, y], vector2Scale(gameState.ballDirection, s))
+  );
 
   gameState.clampedBallPosition = {
     x: newPos[0],
