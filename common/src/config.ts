@@ -19,7 +19,7 @@ type CommonConfig = {
 const STAGE_WIDTH = 576;
 const STAGE_HEIGHT = 576;
 
-const PLAYER_RADIUS = 35;
+const BALL_RADIUS = 30;
 
 export const COMMON_CONFIG: CommonConfig = {
   stageSize: {
@@ -27,13 +27,13 @@ export const COMMON_CONFIG: CommonConfig = {
     height: STAGE_HEIGHT,
   },
   ballClampedStageSize: {
-    width: STAGE_WIDTH - 2 * PLAYER_RADIUS,
-    height: STAGE_HEIGHT - 2 * PLAYER_RADIUS,
+    width: STAGE_WIDTH - 2 * BALL_RADIUS,
+    height: STAGE_HEIGHT - 2 * BALL_RADIUS,
   },
   playerInitialXOffset: 50,
-  playerRadius: PLAYER_RADIUS,
+  playerRadius: 35,
   playerSpeed: 1.1,
-  ballRadius: 30,
+  ballRadius: BALL_RADIUS,
   ballKickSpeed: 600.1,
   ballAcceleration: -100.03,
   fps: 60,

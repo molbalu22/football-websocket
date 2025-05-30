@@ -14,6 +14,7 @@ import { UpdateLoop } from "./game/updateLoop.js";
 import {
   clampMousePostion,
   reflectBallInsideStage,
+  unclampBallPostion,
   vector2Add,
   vector2Length,
   vector2Normalize,
@@ -114,10 +115,10 @@ function moveBall(gameState: ServerGameState) {
     y: newPos[1],
   };
 
-  gameState.ballPosition = {
-    x: newPos[0] + COMMON_CONFIG.ballRadius,
-    y: newPos[1] + COMMON_CONFIG.ballRadius,
-  };
+  gameState.ballPosition = unclampBallPostion({
+    x: newPos[0],
+    y: newPos[1],
+  });
 
   sendServerMessageToAll(gameState, {
     type: "server.gameUpdate",

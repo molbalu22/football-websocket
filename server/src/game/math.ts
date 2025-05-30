@@ -52,6 +52,21 @@ export function clampMousePostion(mousePosition: { x: number; y: number }): {
   return { x, y };
 }
 
+export function unclampBallPostion(clampedBallPosition: {
+  x: number;
+  y: number;
+}): {
+  x: number;
+  y: number;
+} {
+  const { x, y } = clampedBallPosition;
+
+  return {
+    x: x > 0 ? x + COMMON_CONFIG.ballRadius : -(x - COMMON_CONFIG.ballRadius),
+    y: y > 0 ? y + COMMON_CONFIG.ballRadius : -(y - COMMON_CONFIG.ballRadius),
+  };
+}
+
 export function reflectBallInsideStage(
   clampedBallPosition: [number, number]
 ): [number, number] {
@@ -59,18 +74,20 @@ export function reflectBallInsideStage(
 
   let [x, y] = clampedBallPosition;
 
-  // This is a hack, I didn't fix the formula yet
-  // This is forcing the ball position to always be positive
-  // Works as long as a large even constant (like 100) is used
-  // This fails after 100 bounces, which will never happen
-  x = x + 100 * width;
-  y = y + 100 * height;
-
   x = x % (2 * width);
   y = y % (2 * height);
 
-  x = Math.min(x, 2 * width - x);
-  y = Math.min(y, 2 * height - y);
+  if (x > 0) {
+    x = Math.min(x, 2 * width - x);
+  } else {
+    x = Math.max(x, -2 * width - x);
+  }
+
+  if (y > 0) {
+    y = Math.min(y, 2 * height - y);
+  } else {
+    y = Math.max(y, -2 * height - y);
+  }
 
   return [x, y];
 }
