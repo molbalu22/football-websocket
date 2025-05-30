@@ -11,7 +11,13 @@ import {
 import { ServerGameState } from "./game/ServerGameState.js";
 import { COMMON_CONFIG } from "./common/config.js";
 import { UpdateLoop } from "./game/updateLoop.js";
-import { vector2Add, vector2Normalize, vector2Scale } from "./game/math.js";
+import {
+  clampMousePostion,
+  vector2Add,
+  vector2Length,
+  vector2Normalize,
+  vector2Scale,
+} from "./game/math.js";
 
 console.log(config);
 
@@ -44,19 +50,28 @@ function movePlayers(gameState: ServerGameState) {
   const { playerSpeed } = COMMON_CONFIG;
 
   for (const playerIndex of [0, 1] as Array<0 | 1>) {
-    if (gameState.playerMousePosition[playerIndex]) {
+    if (gameState.clampedPlayerMousePosition[playerIndex]) {
       const posX = gameState.playerPosition[playerIndex].x;
       const posY = gameState.playerPosition[playerIndex].y;
 
-      const mouseX = gameState.playerMousePosition[playerIndex].x;
-      const mouseY = gameState.playerMousePosition[playerIndex].y;
+      const mouseX = gameState.clampedPlayerMousePosition[playerIndex].x;
+      const mouseY = gameState.clampedPlayerMousePosition[playerIndex].y;
 
-      const playerDirection = vector2Normalize([mouseX - posX, mouseY - posY]);
+      const diff: [number, number] = [mouseX - posX, mouseY - posY];
 
-      const newPos = vector2Add(
-        [posX, posY],
-        vector2Scale(playerDirection, playerSpeed)
-      );
+      let newPos: [number, number];
+
+      // Prevent jitter (when the player is close to the cursor)
+      if (vector2Length(diff) < playerSpeed) {
+        newPos = [mouseX, mouseY];
+      } else {
+        const playerDirection = vector2Normalize(diff);
+
+        newPos = vector2Add(
+          [posX, posY],
+          vector2Scale(playerDirection, playerSpeed)
+        );
+      }
 
       gameState.playerPosition[playerIndex].x = newPos[0];
       gameState.playerPosition[playerIndex].y = newPos[1];
@@ -177,6 +192,12 @@ function handlePlayerMessage(
       x: message.mouseX,
       y: message.mouseY,
     };
+
+    gameState.clampedPlayerMousePosition[player.playerIndex as 0 | 1] =
+      clampMousePostion({
+        x: message.mouseX,
+        y: message.mouseY,
+      });
   }
 }
 
