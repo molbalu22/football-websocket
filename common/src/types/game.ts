@@ -10,6 +10,8 @@ export type Player = {
 };
 
 export type CommonGameState = {
+  isGameRunning: boolean;
+
   playerPosition: {
     0: {
       x: number;
@@ -20,6 +22,7 @@ export type CommonGameState = {
       y: number;
     };
   };
+
   playerMousePosition: {
     0: {
       x: number;
@@ -30,7 +33,37 @@ export type CommonGameState = {
       y: number;
     } | null;
   };
-  isGameRunning: boolean;
+
+  // Clamping to make sure the player figure cannot be dragged too close to the board edge
+  clampedPlayerMousePosition: {
+    0: {
+      x: number;
+      y: number;
+    } | null;
+    1: {
+      x: number;
+      y: number;
+    } | null;
+  };
+
+  ballPosition: {
+    x: number;
+    y: number;
+  };
+
+  // Clamping to make sure the ball cannot go too close to the board edge
+  clampedBallPosition: {
+    x: number;
+    y: number;
+  };
+
+  clampedBallKickPosition: {
+    x: number;
+    y: number;
+  } | null;
+
+  lastBallKickTime: number;
+  ballDirection: [number, number];
 };
 
 const { playerRadius, stageSize, playerInitialXOffset } = COMMON_CONFIG;
@@ -51,4 +84,19 @@ export const InitialCommonGameState: CommonGameState = {
     0: null,
     1: null,
   },
+  clampedPlayerMousePosition: {
+    0: null,
+    1: null,
+  },
+  ballPosition: {
+    x: 50,
+    y: 526,
+  },
+  clampedBallPosition: {
+    x: 20,
+    y: 496,
+  },
+  clampedBallKickPosition: null,
+  lastBallKickTime: 0,
+  ballDirection: [1, 0],
 };

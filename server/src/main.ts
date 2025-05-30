@@ -72,6 +72,45 @@ function movePlayers(gameState: ServerGameState) {
   });
 }
 
+function moveBall(gameState: ServerGameState) {
+  if (!(gameState.lastBallKickTime && gameState.clampedBallKickPosition)) {
+    return;
+  }
+
+  const v0 = COMMON_CONFIG.ballKickSpeed;
+  const a = COMMON_CONFIG.ballAcceleration;
+  const t = (performance.now() - gameState.lastBallKickTime) / 1000;
+
+  if (t > v0 / -a) {
+    return;
+  }
+
+  const s = v0 * t + (a / 2) * t * t;
+
+  const { clampedBallKickPosition } = gameState;
+  const { x, y } = clampedBallKickPosition;
+  const newPos = vector2Add([x, y], vector2Scale(gameState.ballDirection, s));
+
+  gameState.clampedBallPosition = {
+    x: newPos[0],
+    y: newPos[1],
+  };
+
+  gameState.ballPosition = {
+    x: newPos[0] + COMMON_CONFIG.ballRadius,
+    y: newPos[1] + COMMON_CONFIG.ballRadius,
+  };
+
+  sendServerMessageToAll(gameState, {
+    type: "server.gameUpdate",
+    update: {
+      type: "ballPositionUpdate",
+      position: gameState.ballPosition,
+      clampedPosition: gameState.clampedBallPosition,
+    },
+  });
+}
+
 function handlePlayerMessage(
   gameState: ServerGameState,
   player: Player,
@@ -125,7 +164,13 @@ function handlePlayerMessage(
       gameState.isGameRunning = true;
       const updateLoop = new UpdateLoop(gameState);
       updateLoop.onUpdate(movePlayers);
+      updateLoop.onUpdate(moveBall);
       updateLoop.start();
+
+      setTimeout(() => {
+        gameState.lastBallKickTime = performance.now();
+        gameState.clampedBallKickPosition = gameState.clampedBallPosition;
+      }, 3000);
     }
 
     gameState.playerMousePosition[player.playerIndex as 0 | 1] = {

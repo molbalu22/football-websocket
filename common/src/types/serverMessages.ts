@@ -32,7 +32,19 @@ type PlayerPositionUpdate = {
   };
 };
 
-type GameUpdate = SquareColorUpdate | PlayerPositionUpdate;
+type BallPositionUpdate = {
+  type: "ballPositionUpdate";
+  position: {
+    x: number;
+    y: number;
+  };
+  clampedPosition: {
+    x: number;
+    y: number;
+  };
+};
+
+type GameUpdate = SquareColorUpdate | PlayerPositionUpdate | BallPositionUpdate;
 
 type ServerGameUpdateMessage = {
   type: "server.gameUpdate";

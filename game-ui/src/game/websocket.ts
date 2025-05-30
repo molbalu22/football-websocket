@@ -1,4 +1,4 @@
-import { drawPlayersOnBoard } from "../canvas/playerFigure";
+import { redrawBoard } from "../canvas/board";
 import { onEachFrame, startRenderLoop } from "../canvas/renderLoop";
 import type { PlayerMessage, ServerMessage } from "../common/types";
 import { CONFIG } from "../config";
@@ -10,6 +10,26 @@ const gameSquares = [
   document.getElementById("game-square-index-0"),
   document.getElementById("game-square-index-1"),
 ];
+
+function logServerMessageToConsole(message: ServerMessage) {
+  const isMessageTraceLevel =
+    message.type === "server.gameUpdate" &&
+    message.update.type === "playerPositionUpdate";
+
+  if (isMessageTraceLevel) {
+    if (CONFIG.TRACE) {
+      console.log("[TRACE] Websocket message received:");
+      console.log(message);
+    }
+
+    return;
+  }
+
+  if (CONFIG.DEBUG) {
+    console.log("[DEBUG] Websocket message received:");
+    console.log(message);
+  }
+}
 
 export function sendPlayerMessage(ws: WebSocket, message: PlayerMessage) {
   ws.send(JSON.stringify(message));
@@ -38,7 +58,7 @@ function handleServerMessage(
       gameStatusElement.textContent = `You are: Player ${gameState.playerIndex}`;
     }
 
-    onEachFrame(drawPlayersOnBoard);
+    onEachFrame(redrawBoard);
     startRenderLoop(gameState);
   }
 
@@ -80,6 +100,12 @@ function handleServerMessage(
     else if (update.type === "playerPositionUpdate") {
       gameState.playerPosition = update.position;
     }
+
+    // ballPositionUpdate
+    else if (update.type === "ballPositionUpdate") {
+      gameState.ballPosition = update.position;
+      gameState.clampedBallPosition = update.clampedPosition;
+    }
   }
 }
 
@@ -88,12 +114,7 @@ export async function connectToWebsocket(gameState: GameState) {
 
   ws.onmessage = (event) => {
     const message = JSON.parse(event.data);
-
-    if (CONFIG.DEBUG) {
-      console.log("[DEBUG] Websocket message received:");
-      console.log(message);
-    }
-
+    logServerMessageToConsole(message);
     handleServerMessage(gameState, ws, message);
   };
 

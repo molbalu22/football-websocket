@@ -1,7 +1,6 @@
 import { COMMON_CONFIG } from "../common/config";
 import type { GameState } from "../game/GameState";
 import { FOREGROUND_COLORS } from "./colors";
-import { clearCanvas } from "./ctx";
 
 export function drawPlayerFigure(
   gameState: GameState,
@@ -20,10 +19,8 @@ export function drawPlayerFigure(
 }
 
 export function drawPlayersOnBoard(gameState: GameState) {
-  const { figureCanvas } = gameState;
   const { playerPosition } = gameState;
 
-  clearCanvas(figureCanvas);
   drawPlayerFigure(gameState, 0, playerPosition[0].x, playerPosition[0].y);
   drawPlayerFigure(gameState, 1, playerPosition[1].x, playerPosition[1].y);
 }
