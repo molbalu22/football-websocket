@@ -34,7 +34,7 @@ export const COMMON_CONFIG: CommonConfig = {
   playerRadius: 35,
   playerSpeed: 1.1,
   ballRadius: BALL_RADIUS,
-  ballKickSpeed: 600.1,
+  ballKickSpeed: 300.1,
   ballAcceleration: -100.03,
   fps: 60,
 };

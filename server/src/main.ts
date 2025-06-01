@@ -62,19 +62,21 @@ function movePlayers(gameState: ServerGameState) {
       const diff: [number, number] = [mouseX - posX, mouseY - posY];
 
       let newPos: [number, number];
+      let playerDirection: [number, number];
 
       // Prevent jitter (when the player is close to the cursor)
       if (vector2Length(diff) < playerSpeed) {
+        playerDirection = [0, 0];
         newPos = [mouseX, mouseY];
       } else {
-        const playerDirection = vector2Normalize(diff);
-
+        playerDirection = vector2Normalize(diff);
         newPos = vector2Add(
           [posX, posY],
           vector2Scale(playerDirection, playerSpeed)
         );
       }
 
+      gameState.playerDirection[playerIndex] = playerDirection;
       gameState.playerPosition[playerIndex].x = newPos[0];
       gameState.playerPosition[playerIndex].y = newPos[1];
     }
@@ -128,6 +130,43 @@ function moveBall(gameState: ServerGameState) {
       clampedPosition: gameState.clampedBallPosition,
     },
   });
+}
+
+function setBallKickParams(gameState: ServerGameState) {
+  gameState.lastBallKickTime = performance.now();
+  gameState.clampedBallKickPosition = gameState.clampedBallPosition;
+}
+
+function computeCollisions(gameState: ServerGameState) {
+  const { playerRadius, ballRadius } = COMMON_CONFIG;
+  const { playerPosition, ballPosition } = gameState;
+
+  const posPlayer0 = playerPosition[0];
+  const posPlayer1 = playerPosition[1];
+
+  const diffPlayer0: [number, number] = [
+    ballPosition.x - posPlayer0.x,
+    ballPosition.y - posPlayer0.y,
+  ];
+  const diffPlayer1: [number, number] = [
+    ballPosition.x - posPlayer1.x,
+    ballPosition.y - posPlayer1.y,
+  ];
+
+  const distPlayer0 = vector2Length(diffPlayer0);
+  const distPlayer1 = vector2Length(diffPlayer1);
+
+  const hitDistance = playerRadius + ballRadius;
+
+  if (distPlayer0 < hitDistance) {
+    gameState.ballDirection = gameState.playerDirection[0];
+    setBallKickParams(gameState);
+  }
+
+  if (distPlayer1 < hitDistance && distPlayer1 < distPlayer0) {
+    gameState.ballDirection = gameState.playerDirection[1];
+    setBallKickParams(gameState);
+  }
 }
 
 function handlePlayerMessage(
@@ -184,12 +223,8 @@ function handlePlayerMessage(
       const updateLoop = new UpdateLoop(gameState);
       updateLoop.onUpdate(movePlayers);
       updateLoop.onUpdate(moveBall);
+      updateLoop.onUpdate(computeCollisions);
       updateLoop.start();
-
-      setTimeout(() => {
-        gameState.lastBallKickTime = performance.now();
-        gameState.clampedBallKickPosition = gameState.clampedBallPosition;
-      }, 3000);
     }
 
     gameState.playerMousePosition[player.playerIndex as 0 | 1] = {
