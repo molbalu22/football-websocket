@@ -130,11 +130,28 @@ function moveBall(gameState: ServerGameState) {
 }
 
 function setBallKickParams(gameState: ServerGameState) {
+  const { playerRadius } = COMMON_CONFIG;
+  const { x, y } = gameState.clampedBallPosition;
+
+  const clampedBallKickVector = vector2Add(
+    [x, y],
+    vector2Scale(gameState.ballDirection, playerRadius + 2)
+  );
+
   gameState.lastBallKickTime = performance.now();
-  gameState.clampedBallKickPosition = gameState.clampedBallPosition;
+  gameState.clampedBallKickPosition = {
+    x: clampedBallKickVector[0],
+    y: clampedBallKickVector[1],
+  };
 }
 
 function computeCollisions(gameState: ServerGameState) {
+  const gracePeriodMs = 300;
+
+  if (performance.now() - gameState.lastBallKickTime < gracePeriodMs) {
+    return;
+  }
+
   const { playerRadius, ballRadius } = COMMON_CONFIG;
   const { playerPosition, ballPosition } = gameState;
 
