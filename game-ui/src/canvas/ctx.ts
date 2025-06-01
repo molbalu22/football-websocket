@@ -40,18 +40,22 @@ export class GameStageError {
 export function getGameStage(): GameStage | GameStageError {
   const stage = document.getElementById("stage");
   const cursorCanvas = document.getElementById("cursorCanvas");
-  const opponentCursorCanvas = document.getElementById("opponentCursorCanvas");
   const figureCanvas = document.getElementById("figureCanvas");
+  const ballCanvas = document.getElementById("ballCanvas");
+  const backgroundCanvas = document.getElementById("backgroundCanvas");
 
-  if (!(stage && cursorCanvas && opponentCursorCanvas && figureCanvas)) {
+  if (
+    !(stage && cursorCanvas && figureCanvas && ballCanvas && backgroundCanvas)
+  ) {
     return new GameStageError("NULL_CANVAS");
   }
 
   if (
     !(
       cursorCanvas instanceof HTMLCanvasElement &&
-      opponentCursorCanvas instanceof HTMLCanvasElement &&
-      figureCanvas instanceof HTMLCanvasElement
+      figureCanvas instanceof HTMLCanvasElement &&
+      ballCanvas instanceof HTMLCanvasElement &&
+      backgroundCanvas instanceof HTMLCanvasElement
     )
   ) {
     return new GameStageError("CANVAS_TYPE_ERROR");
@@ -62,17 +66,20 @@ export function getGameStage(): GameStage | GameStageError {
 
   cursorCanvas.width = COMMON_CONFIG.stageSize.width;
   cursorCanvas.height = COMMON_CONFIG.stageSize.height;
-  opponentCursorCanvas.width = COMMON_CONFIG.stageSize.width;
-  opponentCursorCanvas.height = COMMON_CONFIG.stageSize.height;
   figureCanvas.width = COMMON_CONFIG.stageSize.width;
   figureCanvas.height = COMMON_CONFIG.stageSize.height;
+  ballCanvas.width = COMMON_CONFIG.stageSize.width;
+  ballCanvas.height = COMMON_CONFIG.stageSize.height;
+  backgroundCanvas.width = COMMON_CONFIG.stageSize.width;
+  backgroundCanvas.height = COMMON_CONFIG.stageSize.height;
 
   if (cursorCanvas.getContext) {
     const cursorCtx = cursorCanvas.getContext("2d");
-    const opponentCursorCtx = opponentCursorCanvas.getContext("2d");
     const figureCtx = figureCanvas.getContext("2d");
+    const ballCtx = ballCanvas.getContext("2d");
+    const backgroundCtx = backgroundCanvas.getContext("2d");
 
-    if (!(cursorCtx && opponentCursorCtx && figureCtx)) {
+    if (!(cursorCtx && figureCtx && ballCtx && backgroundCtx)) {
       return new GameStageError("GET_2D_CTX_ERROR");
     }
 
@@ -81,13 +88,17 @@ export function getGameStage(): GameStage | GameStageError {
         canvasElement: cursorCanvas,
         ctx: cursorCtx,
       },
-      opponentCursorCanvas: {
-        canvasElement: opponentCursorCanvas,
-        ctx: opponentCursorCtx,
-      },
       figureCanvas: {
         canvasElement: figureCanvas,
         ctx: figureCtx,
+      },
+      ballCanvas: {
+        canvasElement: ballCanvas,
+        ctx: ballCtx,
+      },
+      backgroundCanvas: {
+        canvasElement: backgroundCanvas,
+        ctx: backgroundCtx,
       },
     };
   }

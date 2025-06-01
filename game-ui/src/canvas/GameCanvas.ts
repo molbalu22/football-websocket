@@ -1,7 +1,8 @@
 export type GameStage = {
   cursorCanvas: GameCanvas;
-  opponentCursorCanvas: GameCanvas;
   figureCanvas: GameCanvas;
+  ballCanvas: GameCanvas;
+  backgroundCanvas: GameCanvas;
 };
 
 export type GameCanvas = {

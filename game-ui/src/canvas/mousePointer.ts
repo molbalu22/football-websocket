@@ -26,23 +26,3 @@ export function drawMousePointer(
   ctx.arc(offsetX, offsetY, 10, 0, Math.PI * 2, true);
   ctx.fill();
 }
-
-export function drawOpponentMousePointer(
-  gameState: GameState,
-  offsetX: number,
-  offsetY: number
-) {
-  if (gameState.isPlayerAccepted) {
-    const { opponentCursorCanvas } = gameState;
-    const { ctx } = opponentCursorCanvas;
-
-    clearCanvas(opponentCursorCanvas);
-    ctx.beginPath();
-
-    ctx.fillStyle =
-      FOREGROUND_COLORS[gameState.playerIndex ? 0 : 1].translucent;
-
-    ctx.arc(offsetX, offsetY, 10, 0, Math.PI * 2, true);
-    ctx.fill();
-  }
-}

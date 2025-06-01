@@ -1,3 +1,4 @@
+import { prepareBoard } from "./canvas/board";
 import { GameStageError, getGameStage } from "./canvas/ctx";
 import { drawMousePointer } from "./canvas/mousePointer";
 import { InitialCommonGameState } from "./common/types";
@@ -22,6 +23,8 @@ function main() {
     ...gameStage,
     ...InitialCommonGameState,
   };
+
+  prepareBoard(gameState);
 
   try {
     connectToWebsocket(gameState);

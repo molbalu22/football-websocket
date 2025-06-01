@@ -13,6 +13,8 @@ type CommonConfig = {
   ballRadius: number;
   ballKickSpeed: number;
   ballAcceleration: number;
+  goalWidth: number;
+  goalHeight: number;
   fps: number;
 };
 
@@ -36,5 +38,7 @@ export const COMMON_CONFIG: CommonConfig = {
   ballRadius: BALL_RADIUS,
   ballKickSpeed: 300.1,
   ballAcceleration: -100.03,
+  goalWidth: 40,
+  goalHeight: 150,
   fps: 60,
 };

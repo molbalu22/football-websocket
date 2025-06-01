@@ -4,9 +4,9 @@ import { FOREGROUND_COLORS } from "./colors";
 
 export function drawBallOnBoard(gameState: GameState) {
   const { ballRadius } = COMMON_CONFIG;
-  const { ballPosition, figureCanvas } = gameState;
+  const { ballPosition, ballCanvas } = gameState;
   const { x, y } = ballPosition;
-  const { ctx } = figureCanvas;
+  const { ctx } = ballCanvas;
 
   ctx.beginPath();
   ctx.fillStyle =
