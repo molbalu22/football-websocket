@@ -23,11 +23,6 @@ export type CommonGameState = {
     };
   };
 
-  playerDirection: {
-    0: [number, number];
-    1: [number, number];
-  };
-
   playerMousePosition: {
     0: {
       x: number;
@@ -91,7 +86,6 @@ export const InitialCommonGameState: CommonGameState = {
       y: stageSize.height / 2,
     },
   },
-  playerDirection: { 0: [0, 0], 1: [0, 0] },
   playerMousePosition: {
     0: null,
     1: null,

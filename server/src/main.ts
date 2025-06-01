@@ -62,21 +62,18 @@ function movePlayers(gameState: ServerGameState) {
       const diff: [number, number] = [mouseX - posX, mouseY - posY];
 
       let newPos: [number, number];
-      let playerDirection: [number, number];
 
       // Prevent jitter (when the player is close to the cursor)
       if (vector2Length(diff) < playerSpeed) {
-        playerDirection = [0, 0];
         newPos = [mouseX, mouseY];
       } else {
-        playerDirection = vector2Normalize(diff);
+        const playerDirection = vector2Normalize(diff);
         newPos = vector2Add(
           [posX, posY],
           vector2Scale(playerDirection, playerSpeed)
         );
       }
 
-      gameState.playerDirection[playerIndex] = playerDirection;
       gameState.playerPosition[playerIndex].x = newPos[0];
       gameState.playerPosition[playerIndex].y = newPos[1];
     }
@@ -159,12 +156,12 @@ function computeCollisions(gameState: ServerGameState) {
   const hitDistance = playerRadius + ballRadius;
 
   if (distPlayer0 < hitDistance) {
-    gameState.ballDirection = gameState.playerDirection[0];
+    gameState.ballDirection = vector2Normalize(diffPlayer0);
     setBallKickParams(gameState);
   }
 
   if (distPlayer1 < hitDistance && distPlayer1 < distPlayer0) {
-    gameState.ballDirection = gameState.playerDirection[1];
+    gameState.ballDirection = vector2Normalize(diffPlayer1);
     setBallKickParams(gameState);
   }
 }
