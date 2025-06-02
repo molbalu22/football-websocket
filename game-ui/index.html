@@ -35,15 +35,30 @@
       <div data-type="gap" class="h-2"></div>
 
       <!-- Keep the width and height the same as in the COMMON_CONFIG from ./src/common/config.ts -->
-      <div class="flex gap-2 justify-center">
+      <div class="flex justify-center relative">
         <div
           id="stage"
-          class="w-[576px] h-[576px] bg-neutral-300 dark:bg-neutral-700 rounded cursor-none relative"
+          class="w-[1300px] h-[700px] bg-neutral-300 dark:bg-neutral-700 rounded cursor-none relative"
         >
           <canvas id="cursorCanvas" class="absolute z-60"></canvas>
           <canvas id="figureCanvas" class="absolute z-50"></canvas>
           <canvas id="ballCanvas" class="absolute z-40"></canvas>
           <canvas id="backgroundCanvas" class="absolute z-30"></canvas>
+        </div>
+        <div
+          id="fade"
+          class="w-[1300px] h-[700px] bg-neutral-300 dark:bg-neutral-700 rounded cursor-none absolute z-90 flex justify-center items-center"
+          style="opacity: 0.9; visibility: hidden"
+        >
+          <div class="flex flex-col items-center gap-20">
+            <p class="bold text-9xl">TIME'S UP</p>
+            <p id="win" style="display: none" class="bold text-9xl">
+              <span id="whoHasWon">RED</span> WON
+            </p>
+            <p id="draw" style="display: none" class="bold text-9xl">
+              IT'S A DRAW
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -121,6 +121,8 @@ function handleServerMessage(
 
     // scoreUpdate
     else if (update.type === "scoreUpdate") {
+      gameState.score = update.score;
+
       if (gameScore[0]) {
         gameScore[0].textContent = update.score[0].toString();
       }
@@ -133,6 +135,47 @@ function handleServerMessage(
     // gameTimeUpdate
     else if (update.type === "gameTimeUpdate") {
       gameState.remainingSec = update.remainingSec;
+    }
+
+    // gameEndUpdate
+    else if (update.type === "gameEndUpdate") {
+      let winner: number | null;
+
+      if (gameState.score[0] > gameState.score[1]) {
+        winner = 0;
+      } else if (gameState.score[1] > gameState.score[0]) {
+        winner = 1;
+      } else {
+        winner = null;
+      }
+
+      if (winner !== null) {
+        const whoHasWonSpanElement = document.getElementById("whoHasWon");
+
+        if (whoHasWonSpanElement) {
+          whoHasWonSpanElement.classList.toggle("text-red-500", winner === 0);
+          whoHasWonSpanElement.classList.toggle("text-blue-500", winner === 1);
+          whoHasWonSpanElement.innerText = winner === 0 ? "RED" : "BLUE";
+        }
+
+        const winElement = document.getElementById("win");
+
+        if (winElement) {
+          winElement.style.display = "block";
+        }
+      } else {
+        const drawElement = document.getElementById("draw");
+
+        if (drawElement) {
+          drawElement.style.display = "block";
+        }
+      }
+
+      const fadeElement = document.getElementById("fade");
+
+      if (fadeElement) {
+        fadeElement.style.visibility = "visible";
+      }
     }
   }
 }

@@ -42,6 +42,5 @@ export const COMMON_CONFIG: CommonConfig = {
   goalWidth: 40,
   goalHeight: 150,
   fps: 60,
-  // gameDurationSec: 90,
-  gameDurationSec: 20,
+  gameDurationSec: 90,
 };
