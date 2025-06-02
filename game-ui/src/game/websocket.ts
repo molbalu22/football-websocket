@@ -55,7 +55,25 @@ function handleServerMessage(
     gameState.playerIndex = message.playerIndex;
 
     if (gameStatusElement) {
-      gameStatusElement.textContent = `You are: Player ${gameState.playerIndex}`;
+      const classList = ["bold"];
+
+      if (gameState.playerIndex === 0) {
+        classList.push("text-red-500");
+      } else {
+        classList.push("text-blue-500");
+      }
+
+      const className = classList.join(" ");
+
+      let playerName;
+
+      if (gameState.playerIndex === 0) {
+        playerName = "Red";
+      } else {
+        playerName = "Blue";
+      }
+
+      gameStatusElement.innerHTML = `You are: <span class="${className}">${playerName}</span>`;
     }
 
     onEachFrame(redrawBoard);
