@@ -20,4 +20,4 @@ npm run dev
 
 Refresh the two browser windows.
 
-The game starts when on of the players moves the cursor onto the playing field.
+The game starts when one of the players moves the cursor onto the playing field.
