@@ -222,6 +222,43 @@ function awardPoints(gameState: ServerGameState) {
   gameState.isBallInGoal = ballInGoal0 || ballInGoal1;
 }
 
+function sendGameTimeUpdateToAll(gameState: ServerGameState) {
+  const { gameDurationSec } = COMMON_CONFIG;
+
+  const elapsedSec = (performance.now() - gameState.gameStartTime) / 1000;
+  const remainingSec = gameDurationSec - elapsedSec;
+
+  if (remainingSec <= 0) {
+    sendServerMessageToAll(gameState, {
+      type: "server.gameUpdate",
+      update: {
+        type: "gameTimeUpdate",
+        remainingSec: 0,
+      },
+    });
+
+    sendServerMessageToAll(gameState, {
+      type: "server.gameUpdate",
+      update: {
+        type: "gameEndUpdate",
+      },
+    });
+
+    gameState.isGameRunning = false;
+    gameState.gameEnded = true;
+
+    return;
+  }
+
+  sendServerMessageToAll(gameState, {
+    type: "server.gameUpdate",
+    update: {
+      type: "gameTimeUpdate",
+      remainingSec,
+    },
+  });
+}
+
 function handlePlayerMessage(
   gameState: ServerGameState,
   player: Player,
@@ -229,13 +266,15 @@ function handlePlayerMessage(
 ) {
   // player.mouseMove
   if (message.type === "player.mouseMove") {
-    if (!gameState.isGameRunning) {
+    if (!gameState.isGameRunning && !gameState.gameEnded) {
       gameState.isGameRunning = true;
+      gameState.gameStartTime = performance.now();
       const updateLoop = new UpdateLoop(gameState);
       updateLoop.onUpdate(movePlayers);
       updateLoop.onUpdate(moveBall);
       updateLoop.onUpdate(computeCollisions);
       updateLoop.onUpdate(awardPoints);
+      updateLoop.onUpdate(sendGameTimeUpdateToAll);
       updateLoop.start();
     }
 

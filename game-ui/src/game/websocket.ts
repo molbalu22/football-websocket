@@ -5,6 +5,7 @@ import { CONFIG } from "../config";
 import type { GameState } from "./GameState";
 
 const gameStatusElement = document.getElementById("gameStatus");
+const gameTimer = document.getElementById("gameTimer");
 
 const gameScore = {
   0: document.getElementById("score-value-0"),
@@ -37,6 +38,20 @@ export function sendPlayerMessage(ws: WebSocket, message: PlayerMessage) {
   if (CONFIG.DEBUG) {
     console.log("[DEBUG] Websocket message sent:");
     console.log(message);
+  }
+}
+
+function setGameTimer(gameState: GameState) {
+  const { remainingSec } = gameState;
+
+  const mins = Math.floor(remainingSec / 60);
+  const secs = Math.floor(remainingSec % 60);
+
+  const minStr = mins.toString().padStart(2, "0");
+  const secStr = secs.toString().padStart(2, "0");
+
+  if (gameTimer) {
+    gameTimer.innerText = `${minStr}:${secStr}`;
   }
 }
 
@@ -77,6 +92,7 @@ function handleServerMessage(
     }
 
     onEachFrame(redrawBoard);
+    onEachFrame(setGameTimer);
     startRenderLoop(gameState);
   }
 
@@ -112,6 +128,11 @@ function handleServerMessage(
       if (gameScore[1]) {
         gameScore[1].textContent = update.score[1].toString();
       }
+    }
+
+    // gameTimeUpdate
+    else if (update.type === "gameTimeUpdate") {
+      gameState.remainingSec = update.remainingSec;
     }
   }
 }

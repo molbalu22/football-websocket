@@ -1,6 +1,7 @@
 import { prepareBoard } from "./canvas/board";
 import { GameStageError, getGameStage } from "./canvas/ctx";
 import { drawMousePointer } from "./canvas/mousePointer";
+import { COMMON_CONFIG } from "./common/config";
 import { InitialCommonGameState } from "./common/types";
 import { onMouseMove, registerMouseMoveCallback } from "./events/mouse";
 import type { GameState } from "./game/GameState";
@@ -20,6 +21,7 @@ function main() {
     isPlayerAccepted: false,
     playerIndex: 0,
     darkTheme: document.body.dataset.theme === "dark",
+    remainingSec: COMMON_CONFIG.gameDurationSec,
     ...gameStage,
     ...InitialCommonGameState(),
   };

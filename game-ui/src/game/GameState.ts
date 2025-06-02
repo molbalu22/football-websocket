@@ -8,6 +8,7 @@ export type GameState = Prettify<
     isPlayerAccepted: boolean;
     playerIndex: number;
     darkTheme: boolean;
+    remainingSec: number;
   } & GameStage &
     CommonGameState
 >;

@@ -46,7 +46,21 @@ type ScoreUpdate = {
   };
 };
 
-type GameUpdate = PlayerPositionUpdate | BallPositionUpdate | ScoreUpdate;
+type GameTimeUpdate = {
+  type: "gameTimeUpdate";
+  remainingSec: number;
+};
+
+type GameEndUpdate = {
+  type: "gameEndUpdate";
+};
+
+type GameUpdate =
+  | PlayerPositionUpdate
+  | BallPositionUpdate
+  | ScoreUpdate
+  | GameTimeUpdate
+  | GameEndUpdate;
 
 type ServerGameUpdateMessage = {
   type: "server.gameUpdate";

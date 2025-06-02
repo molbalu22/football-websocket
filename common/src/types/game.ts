@@ -11,6 +11,7 @@ export type Player = {
 
 export type CommonGameState = {
   isGameRunning: boolean;
+  gameEnded: boolean;
 
   playerPosition: {
     0: {
@@ -71,6 +72,8 @@ export type CommonGameState = {
   };
 
   isBallInGoal: boolean;
+
+  gameStartTime: number;
 };
 
 const { ballRadius, stageSize, ballClampedStageSize, playerInitialXOffset } =
@@ -84,6 +87,7 @@ const CLAMPED_BALL_POSITION = {
 export function InitialCommonGameState(): CommonGameState {
   return {
     isGameRunning: false,
+    gameEnded: false,
     playerPosition: {
       0: {
         x: playerInitialXOffset,
@@ -115,5 +119,6 @@ export function InitialCommonGameState(): CommonGameState {
       1: 0,
     },
     isBallInGoal: false,
+    gameStartTime: 0,
   };
 }

@@ -16,10 +16,11 @@ type CommonConfig = {
   goalWidth: number;
   goalHeight: number;
   fps: number;
+  gameDurationSec: number;
 };
 
-const STAGE_WIDTH = 576;
-const STAGE_HEIGHT = 576;
+const STAGE_WIDTH = 1300;
+const STAGE_HEIGHT = 700;
 
 const BALL_RADIUS = 30;
 
@@ -34,11 +35,13 @@ export const COMMON_CONFIG: CommonConfig = {
   },
   playerInitialXOffset: 100,
   playerRadius: 35,
-  playerSpeed: 1.1,
+  playerSpeed: 2.1,
   ballRadius: BALL_RADIUS,
   ballKickSpeed: 300.1,
   ballAcceleration: -100.03,
   goalWidth: 40,
   goalHeight: 150,
   fps: 60,
+  // gameDurationSec: 90,
+  gameDurationSec: 20,
 };
