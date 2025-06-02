@@ -64,6 +64,13 @@ export type CommonGameState = {
 
   lastBallKickTime: number;
   ballDirection: [number, number];
+
+  score: {
+    0: number;
+    1: number;
+  };
+
+  isBallInGoal: boolean;
 };
 
 const { ballRadius, stageSize, ballClampedStageSize, playerInitialXOffset } =
@@ -74,32 +81,39 @@ const CLAMPED_BALL_POSITION = {
   y: ballClampedStageSize.height / 2,
 };
 
-export const InitialCommonGameState: CommonGameState = {
-  isGameRunning: false,
-  playerPosition: {
-    0: {
-      x: playerInitialXOffset,
-      y: stageSize.height / 2,
+export function InitialCommonGameState(): CommonGameState {
+  return {
+    isGameRunning: false,
+    playerPosition: {
+      0: {
+        x: playerInitialXOffset,
+        y: stageSize.height / 2,
+      },
+      1: {
+        x: stageSize.width - playerInitialXOffset,
+        y: stageSize.height / 2,
+      },
     },
-    1: {
-      x: stageSize.width - playerInitialXOffset,
-      y: stageSize.height / 2,
+    playerMousePosition: {
+      0: null,
+      1: null,
     },
-  },
-  playerMousePosition: {
-    0: null,
-    1: null,
-  },
-  clampedPlayerMousePosition: {
-    0: null,
-    1: null,
-  },
-  ballPosition: {
-    x: CLAMPED_BALL_POSITION.x + ballRadius,
-    y: CLAMPED_BALL_POSITION.y + ballRadius,
-  },
-  clampedBallPosition: CLAMPED_BALL_POSITION,
-  clampedBallKickPosition: null,
-  lastBallKickTime: 0,
-  ballDirection: [0, 0],
-};
+    clampedPlayerMousePosition: {
+      0: null,
+      1: null,
+    },
+    ballPosition: {
+      x: CLAMPED_BALL_POSITION.x + ballRadius,
+      y: CLAMPED_BALL_POSITION.y + ballRadius,
+    },
+    clampedBallPosition: CLAMPED_BALL_POSITION,
+    clampedBallKickPosition: null,
+    lastBallKickTime: 0,
+    ballDirection: [0, 0],
+    score: {
+      0: 0,
+      1: 0,
+    },
+    isBallInGoal: false,
+  };
+}

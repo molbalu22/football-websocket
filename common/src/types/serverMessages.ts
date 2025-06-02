@@ -12,12 +12,6 @@ type ServerTooManyPlayersMessage = {
   type: "server.tooManyPlayers";
 };
 
-type SquareColorUpdate = {
-  type: "squareColorUpdate";
-  playerIndex: number;
-  color: "red" | "green" | "blue";
-};
-
 type PlayerPositionUpdate = {
   type: "playerPositionUpdate";
   position: {
@@ -44,7 +38,15 @@ type BallPositionUpdate = {
   };
 };
 
-type GameUpdate = SquareColorUpdate | PlayerPositionUpdate | BallPositionUpdate;
+type ScoreUpdate = {
+  type: "scoreUpdate";
+  score: {
+    0: number;
+    1: number;
+  };
+};
+
+type GameUpdate = PlayerPositionUpdate | BallPositionUpdate | ScoreUpdate;
 
 type ServerGameUpdateMessage = {
   type: "server.gameUpdate";

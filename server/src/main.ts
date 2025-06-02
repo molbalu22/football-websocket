@@ -45,7 +45,7 @@ function sendServerMessageToAll(
 
 const gameState: ServerGameState = {
   players: [],
-  ...InitialCommonGameState,
+  ...InitialCommonGameState(),
 };
 
 function movePlayers(gameState: ServerGameState) {
@@ -183,61 +183,59 @@ function computeCollisions(gameState: ServerGameState) {
   }
 }
 
+function sendScoreUpdateToAll(gameState: ServerGameState) {
+  sendServerMessageToAll(gameState, {
+    type: "server.gameUpdate",
+    update: {
+      type: "scoreUpdate",
+      score: gameState.score,
+    },
+  });
+}
+
+function awardPoints(gameState: ServerGameState) {
+  const { ballRadius, goalWidth, goalHeight, stageSize } = COMMON_CONFIG;
+  const { width, height } = stageSize;
+  const { ballPosition } = gameState;
+  const { x, y } = ballPosition;
+
+  const ballInGoal0 =
+    x <= goalWidth + ballRadius &&
+    y >= (height - goalHeight) / 2 &&
+    y <= (height + goalHeight) / 2;
+
+  const ballInGoal1 =
+    x >= width - goalWidth - ballRadius &&
+    y >= (height - goalHeight) / 2 &&
+    y <= (height + goalHeight) / 2;
+
+  if (!gameState.isBallInGoal && ballInGoal0) {
+    gameState.score[1] += 1;
+    sendScoreUpdateToAll(gameState);
+  }
+
+  if (!gameState.isBallInGoal && ballInGoal1) {
+    gameState.score[0] += 1;
+    sendScoreUpdateToAll(gameState);
+  }
+
+  gameState.isBallInGoal = ballInGoal0 || ballInGoal1;
+}
+
 function handlePlayerMessage(
   gameState: ServerGameState,
   player: Player,
   message: PlayerMessage
 ) {
-  // player.keyboardInput
-  if (message.type === "player.keyboardInput") {
-    const { key, ctrlKey, metaKey, altKey, shiftKey } = message;
-
-    if (!ctrlKey && !metaKey && !altKey && !shiftKey) {
-      switch (key) {
-        case "r":
-          sendServerMessageToAll(gameState, {
-            type: "server.gameUpdate",
-            update: {
-              type: "squareColorUpdate",
-              playerIndex: player.playerIndex,
-              color: "red",
-            },
-          });
-          break;
-
-        case "g":
-          sendServerMessageToAll(gameState, {
-            type: "server.gameUpdate",
-            update: {
-              type: "squareColorUpdate",
-              playerIndex: player.playerIndex,
-              color: "green",
-            },
-          });
-          break;
-
-        case "b":
-          sendServerMessageToAll(gameState, {
-            type: "server.gameUpdate",
-            update: {
-              type: "squareColorUpdate",
-              playerIndex: player.playerIndex,
-              color: "blue",
-            },
-          });
-          break;
-      }
-    }
-  }
-
   // player.mouseMove
-  else if (message.type === "player.mouseMove") {
+  if (message.type === "player.mouseMove") {
     if (!gameState.isGameRunning) {
       gameState.isGameRunning = true;
       const updateLoop = new UpdateLoop(gameState);
       updateLoop.onUpdate(movePlayers);
       updateLoop.onUpdate(moveBall);
       updateLoop.onUpdate(computeCollisions);
+      updateLoop.onUpdate(awardPoints);
       updateLoop.start();
     }
 

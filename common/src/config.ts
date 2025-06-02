@@ -32,7 +32,7 @@ export const COMMON_CONFIG: CommonConfig = {
     width: STAGE_WIDTH - 2 * BALL_RADIUS,
     height: STAGE_HEIGHT - 2 * BALL_RADIUS,
   },
-  playerInitialXOffset: 50,
+  playerInitialXOffset: 100,
   playerRadius: 35,
   playerSpeed: 1.1,
   ballRadius: BALL_RADIUS,

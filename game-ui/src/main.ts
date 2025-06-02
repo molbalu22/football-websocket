@@ -21,7 +21,7 @@ function main() {
     playerIndex: 0,
     darkTheme: document.body.dataset.theme === "dark",
     ...gameStage,
-    ...InitialCommonGameState,
+    ...InitialCommonGameState(),
   };
 
   prepareBoard(gameState);
