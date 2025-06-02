@@ -62,8 +62,8 @@ export function unclampBallPostion(clampedBallPosition: {
   const { x, y } = clampedBallPosition;
 
   return {
-    x: x > 0 ? x + COMMON_CONFIG.ballRadius : -(x - COMMON_CONFIG.ballRadius),
-    y: y > 0 ? y + COMMON_CONFIG.ballRadius : -(y - COMMON_CONFIG.ballRadius),
+    x: x > 0 ? x + COMMON_CONFIG.ballRadius : x - COMMON_CONFIG.ballRadius,
+    y: y > 0 ? y + COMMON_CONFIG.ballRadius : y - COMMON_CONFIG.ballRadius,
   };
 }
 
@@ -80,13 +80,13 @@ export function reflectBallInsideStage(
   if (x > 0) {
     x = Math.min(x, 2 * width - x);
   } else {
-    x = Math.max(x, -2 * width - x);
+    x = -Math.max(x, -2 * width - x);
   }
 
   if (y > 0) {
     y = Math.min(y, 2 * height - y);
   } else {
-    y = Math.max(y, -2 * height - y);
+    y = -Math.max(y, -2 * height - y);
   }
 
   return [x, y];
